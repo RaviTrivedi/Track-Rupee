@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Track Rupee",
+    "slug": "trackrupee",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/trackrupee-icon.png",
+    "scheme": "trackrupee",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "icon": "./assets/images/trackrupee-icon.png"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFF9E3",
+        "foregroundImage": "./assets/images/trackrupee-icon.png",
+        "monochromeImage": "./assets/images/trackrupee-icon.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/trackrupee-icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#EA7A53",
+          "image": "./assets/images/trackrupee-icon.png",
+          "imageWidth": 128
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
