@@ -4,6 +4,16 @@ TrackRupee is an Android-first personal finance tracker for managing accounts, i
 
 The project is built as a full-stack application with a strict TypeScript Expo mobile client and an Express API backed by PostgreSQL and Prisma.
 
+## Screenshots
+
+### Home
+
+![TrackRupee Home](./FE/assets/screenshots/home.png)
+
+### Transactions
+
+![TrackRupee Transactions](./FE/assets/screenshots/transactions.png)
+
 ## Highlights
 
 - JWT authentication with short-lived access tokens and rotating refresh tokens.
