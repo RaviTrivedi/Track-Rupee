@@ -23,6 +23,7 @@ import {
   useGetAccountsQuery,
   useUpdateAccountMutation,
 } from "./accounts.api";
+import { formatInr } from "@/utils/currency";
 
 const amountPattern = /^(?:0|[1-9]\d*)(?:\.\d{0,2})?$/;
 const requestMessage = (error: unknown) =>
@@ -88,8 +89,10 @@ export function AccountsScreen() {
     if (!name.trim()) return setError("Account name is required.");
     if (!editingId && !type) return setError("Account type is required.");
     if (editingId) {
+      console.log("editingId ---", editingId);
+
       try {
-        await updateAccount({ id: editingId, name: name.trim() }).unwrap();
+        await updateAccount({ id: editingId, name: name.trim(), openingBalance: openingBalance }).unwrap();
         setVisible(false);
       } catch (requestError) {
         setError(requestMessage(requestError));
@@ -122,7 +125,7 @@ export function AccountsScreen() {
           <MainHeader title="Accounts" />
           <View style={styles.balance}>
             <Text style={styles.balanceLabel}>Total balance</Text>
-            <Text style={styles.balanceAmount}>₹{total}</Text>
+            <Text style={styles.balanceAmount}>₹{formatInr(total)}</Text>
           </View>
           {isLoading ? (
             <View style={styles.state}>
@@ -224,5 +227,6 @@ const styles = StyleSheet.create({
   state: { alignItems: "center", gap: spacing.md, padding: spacing.xl },
   error: { ...typography.body, color: "#B42318", textAlign: "center" },
 });
+
 
 

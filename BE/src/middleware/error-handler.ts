@@ -32,7 +32,7 @@ export const errorHandler: ErrorRequestHandler = (error: unknown, _req, res, nex
 
   if (status >= 500) {
     // Do not log request bodies, query strings, or arbitrary error payloads.
-    console.error('Request failed with an internal server error.');
+    console.error('Request failed with an internal server error.', error instanceof Error ? error.stack : error);
   }
   res.status(status).json(errorResponse(message));
 };

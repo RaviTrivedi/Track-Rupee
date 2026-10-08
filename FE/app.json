@@ -29,10 +29,11 @@
         {
           "backgroundColor": "#EA7A53",
           "image": "./assets/images/trackrupee-icon.png",
-          "imageWidth": 128
+          "imageWidth": 180
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,

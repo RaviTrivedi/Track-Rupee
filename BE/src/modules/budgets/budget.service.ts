@@ -2,7 +2,7 @@ import { Prisma } from '../../generated/prisma/client';
 import { prisma } from '../../config/database';
 import { AppError } from '../../utils/app-error';
 import { serializable } from '../../utils/serializable';
-import { monthBounds, withProgress } from './budget.progress';
+import { withProgress } from './budget.progress';
 import type { CreateBudgetInput, UpdateBudgetInput, BudgetQuery } from './budget.types';
 
 async function mutate<T>(work: (tx: Prisma.TransactionClient) => Promise<T>) {
@@ -20,9 +20,13 @@ export async function createBudget(userId: string, input: CreateBudgetInput) {
     const category = await tx.category.findUnique({ where: { id_userId: { id: input.categoryId, userId } } });
     if (!category) throw new AppError('Category not found.', 404);
     if (category.type !== 'EXPENSE') throw new AppError('Budgets require an EXPENSE category.', 400);
+    const [bounds] = await tx.$queryRaw<Array<{ startsAt: Date; endsAt: Date }>>(Prisma.sql`
+      SELECT make_timestamptz(${input.year}, ${input.month}, 1, 0, 0, 0, 'Asia/Kolkata') AS "startsAt",
+        ((make_date(${input.year}, ${input.month}, 1) + INTERVAL '1 month') AT TIME ZONE 'Asia/Kolkata') AS "endsAt"
+    `);
     const budget = await tx.budget.create({ data: {
       userId, categoryId: input.categoryId, amount: new Prisma.Decimal(input.amount), currency: 'INR',
-      month: input.month, year: input.year, ...monthBounds(input.month, input.year),
+      month: input.month, year: input.year, startsAt: bounds!.startsAt, endsAt: bounds!.endsAt,
     } });
     return (await withProgress(tx, userId, [budget]))[0]!;
   });

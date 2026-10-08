@@ -10,7 +10,7 @@ export function BalanceCard({ balance, accountCount }: BalanceCardProps) {
       <Text style={styles.label}>Total balance</Text>
       <View style={styles.row}>
         <Text style={styles.amount}>₹{balance}</Text>
-        <Text style={styles.meta}>{accountCount} {'account(s)'}</Text>
+        {/* <Text style={styles.meta}>{accountCount} {'account(s)'}</Text> */}
       </View>
     </View>
   );

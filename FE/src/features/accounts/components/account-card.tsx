@@ -2,6 +2,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { LocalAccount } from "@/features/accounts/accounts.types";
 import { colors, fonts, radii, spacing } from "@/theme";
+import { formatInr } from "@/utils/currency";
 
 const icons = {
   CASH: "payments",
@@ -32,7 +33,7 @@ export function AccountCard({
         <Text style={styles.type}>{account.type}</Text>
       </View>
       <View style={styles.actions}>
-        <Text style={styles.balance}>₹{account.balance}</Text>
+        <Text style={styles.balance}>₹{formatInr(account.balance)}</Text>
         <Pressable
           accessibilityLabel={"Edit " + account.name}
           onPress={onEdit}
@@ -88,3 +89,4 @@ const styles = StyleSheet.create({
   balance: { color: colors.text, fontFamily: fonts.bold, fontSize: 17 },
   actions: { alignItems: "flex-end", gap: spacing.sm },
 });
+
