@@ -1,5 +1,8 @@
 # TrackRupee
 
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/60895e71-926e-41ea-8675-f342183139f0" />
+
+
 TrackRupee is an Android-first personal finance tracker for managing accounts, income, expenses, categories, and monthly budgets in INR.
 
 The project is built as a full-stack application with a strict TypeScript Expo mobile client and an Express API backed by PostgreSQL and Prisma.
