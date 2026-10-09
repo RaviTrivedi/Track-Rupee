@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/trackrupee-icon.png",
         "monochromeImage": "./assets/images/trackrupee-icon.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.ravitrivedi.trackrupee"
     },
     "web": {
       "output": "static",
@@ -38,6 +39,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5f09a643-d775-4cc0-af32-e34a7f14aa90"
+      }
     }
   }
 }
