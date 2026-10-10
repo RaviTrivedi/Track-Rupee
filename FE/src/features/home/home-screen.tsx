@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { Screen } from '@/components/screen';
@@ -18,12 +18,12 @@ import { useGetBudgetsQuery } from '@/features/budgets/budgets.api';
 
 export function HomeScreen() {
   const user = useAppSelector((state) => state.auth.user);
-  const { data: categoryData } = useGetCategoriesQuery();
+  const { data: categoryData, isLoading: categoriesLoading } = useGetCategoriesQuery();
   const apiCategories = categoryData?.data.categories ?? [];
   const orderCategories = (items: typeof apiCategories) => [...items].sort((a, b) => Number(a.name.toLowerCase().startsWith('other')) - Number(b.name.toLowerCase().startsWith('other')) || a.name.localeCompare(b.name));
   const incomeCategories = orderCategories(apiCategories.filter((category) => category.type === 'INCOME')).map((category) => ({ ...category, icon: category.icon ?? 'category', color: category.color ?? '#F6ECC9' }));
   const expenseCategories = orderCategories(apiCategories.filter((category) => category.type === 'EXPENSE')).map((category) => ({ ...category, icon: category.icon ?? 'category', color: category.color ?? '#F6ECC9' }));
-  const { data } = useGetAccountsQuery();
+  const { data, isLoading: accountsLoading } = useGetAccountsQuery();
   const accounts = data?.data.accounts ?? [];
   const totalCents = accounts.reduce((sum, account) => sum + Math.round(Number(account.balance) * 100), 0);
   const balance = Math.floor(totalCents / 100) + '.' + String(totalCents % 100).padStart(2, '0');
@@ -31,7 +31,7 @@ export function HomeScreen() {
   const { data: transactionData, isLoading: transactionsLoading } = useGetTransactionsQuery({});
   const recentTransactions = (transactionData?.data.transactions ?? []).slice(0, 3);
   const currentDate = new Date();
-  const { data: budgetData } = useGetBudgetsQuery({ month: currentDate.getMonth() + 1, year: currentDate.getFullYear() });
+  const { data: budgetData, isLoading: budgetsLoading } = useGetBudgetsQuery({ month: currentDate.getMonth() + 1, year: currentDate.getFullYear() });
   const currentBudget = budgetData?.data.budgets[0];
 
   const hasAccount = accountCount > 0;
@@ -40,7 +40,7 @@ export function HomeScreen() {
     <Screen contentContainerStyle={styles.screen}>
       <View style={styles.content}>
         <MainHeader title="Home" />
-        <BalanceCard balance={formatInr(balance)} accountCount={accountCount} />
+        {accountsLoading ? <View style={styles.loadingCard}><ActivityIndicator color={colors.primary} /><Text style={styles.muted}>Loading balance...</Text></View> : <BalanceCard balance={formatInr(balance)} accountCount={accountCount} />}
 
         {!hasAccount && (
           <View style={styles.setupCard}>
@@ -101,5 +101,6 @@ const styles = StyleSheet.create({
   expense: { color: '#B42318' },
   budgetRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.lg, borderWidth: 1, borderColor: colors.border, borderRadius: 16, backgroundColor: colors.surface },
   budgetPercent: { color: colors.primary, fontFamily: fonts.bold, fontSize: 18 },
+  loadingCard: { minHeight: 72, alignItems: 'center', justifyContent: 'center', gap: spacing.sm, borderRadius: 16, backgroundColor: colors.surface },
 });
 

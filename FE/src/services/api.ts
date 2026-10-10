@@ -8,6 +8,7 @@ import type { RootState } from '@/store';
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: env.apiBaseUrl,
+  timeout: 15000,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.accessToken;
     if (token) headers.set('authorization', 'Bearer ' + token);

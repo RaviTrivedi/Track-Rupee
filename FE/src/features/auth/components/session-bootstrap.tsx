@@ -23,7 +23,10 @@ export function SessionBootstrap({ children }: PropsWithChildren) {
         return;
       }
       try {
-        const response = await loadUser().unwrap();
+        const response = await Promise.race([
+          loadUser().unwrap(),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Session restore timed out.')), 10000)),
+        ]);
         if (active) dispatch(setSession({
           accessToken: accessToken ?? '',
           user: response.data.user,

@@ -16,6 +16,7 @@ type Props = {
   accounts: Option[];
   categories: Option[];
   error: string | null;
+  submitting?: boolean;
   onChange: (draft: TransactionDraft) => void;
   onClose: () => void;
   onSave: () => void;
@@ -27,6 +28,7 @@ export function TransactionModal({
   accounts,
   categories,
   error,
+  submitting = false,
   onChange,
   onClose,
   onSave,
@@ -42,7 +44,7 @@ export function TransactionModal({
             <Text style={styles.title}>
               {editing ? "Edit transaction" : "Add transaction"}
             </Text>
-            <Pressable onPress={onClose} hitSlop={12}>
+            <Pressable disabled={submitting} onPress={onClose} hitSlop={12}>
               <MaterialIcons name="close" size={24} color={colors.text} />
             </Pressable>
           </View>
@@ -131,11 +133,11 @@ export function TransactionModal({
           />
           {error && <Text style={styles.error}>{error}</Text>}
           <View style={styles.actions}>
-            <Pressable onPress={onClose} style={styles.cancel}>
+            <Pressable disabled={submitting} onPress={onClose} style={styles.cancel}>
               <Text style={styles.cancelText}>Cancel</Text>
             </Pressable>
             <View style={styles.save}>
-              <PrimaryButton label="Save" onPress={onSave} />
+              <PrimaryButton loading={submitting} disabled={submitting} label="Save" onPress={onSave} />
             </View>
           </View>
         </ScrollView>

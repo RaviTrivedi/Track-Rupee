@@ -68,8 +68,8 @@ export default function TransactionsScreen() {
   } = useGetTransactionsQuery(filter === "ALL" ? undefined : { type: filter });
   const { data: accountData } = useGetAccountsQuery();
   const { data: categoryData } = useGetCategoriesQuery();
-  const [create] = useCreateTransactionMutation();
-  const [update] = useUpdateTransactionMutation();
+  const [create, createState] = useCreateTransactionMutation();
+  const [update, updateState] = useUpdateTransactionMutation();
   const [remove] = useDeleteTransactionMutation();
   const transactions = [...(txData?.data.transactions ?? [])].sort((a, b) =>
     b.date.localeCompare(a.date)
@@ -254,6 +254,7 @@ export default function TransactionsScreen() {
         accounts={accounts}
         categories={categories}
         error={formError}
+        submitting={createState.isLoading || updateState.isLoading}
         onChange={setDraft}
         onClose={() => setVisible(false)}
         onSave={() => void save()}
@@ -338,6 +339,7 @@ const styles = StyleSheet.create({
   state: { alignItems: "center", gap: spacing.md, padding: spacing.xl },
   error: { ...typography.caption, color: "#B42318" },
 });
+
 
 
 

@@ -15,24 +15,32 @@ import { colors, spacing } from '@/theme';
 type ScreenProps = PropsWithChildren<{
   keyboardAware?: boolean;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  scrollEnabled?: boolean;
 }>;
 
 export function Screen({
   children,
   keyboardAware = false,
   contentContainerStyle,
+  scrollEnabled = true,
 }: ScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'bottom', 'left']}>
       <KeyboardAvoidingView
         enabled={keyboardAware}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.flex}>
+        style={styles.flex}
+      >
         <ScrollView
+          style={styles.scroll}
+          nestedScrollEnabled
+          scrollEnabled={scrollEnabled}
+          alwaysBounceVertical
           contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
           keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.content}>{children}</View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -41,6 +49,7 @@ export function Screen({
 }
 
 const styles = StyleSheet.create({
+  scroll: { flex: 1 },
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
@@ -54,7 +63,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xl,
   },
   content: {
-    flex: 1,
     width: '100%',
     maxWidth: 440,
     alignSelf: 'center',

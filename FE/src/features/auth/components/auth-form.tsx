@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, router } from 'expo-router';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { Brand } from '@/components/brand';
 import { FormField } from '@/components/form-field';
@@ -21,6 +22,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dispatch = useAppDispatch();
   const [login, loginState] = useLoginMutation();
@@ -51,9 +53,8 @@ export function AuthForm({ mode }: AuthFormProps) {
       router.replace('/(main)');
     } catch (requestError: unknown) {
       const data = (requestError as { data?: { message?: string } }).data;
-      console.log("data ---", data);
-
-      setError(data?.message ?? 'Unable to complete the request. Please try again.');
+      const status = (requestError as { status?: string | number }).status;
+      setError(data?.message ?? (status === 'TIMEOUT_ERROR' ? 'The server took too long to respond. Please try again.' : status === 'FETCH_ERROR' ? 'Unable to reach the server. Check your connection and try again.' : 'Unable to complete the request. Please try again.'));
     }
   };
 
@@ -100,8 +101,9 @@ export function AuthForm({ mode }: AuthFormProps) {
           onChangeText={setPassword}
           placeholder="Enter your password"
           returnKeyType="done"
-          secureTextEntry
+          secureTextEntry={!passwordVisible}
           value={password}
+          rightElement={<Pressable accessibilityRole="button" accessibilityLabel={passwordVisible ? 'Hide password' : 'Show password'} onPress={() => setPasswordVisible((visible) => !visible)} hitSlop={8}><MaterialIcons name={passwordVisible ? 'visibility-off' : 'visibility'} size={22} color={colors.textMuted} /></Pressable>}
         />
         <PrimaryButton
           disabled={isSubmitting}

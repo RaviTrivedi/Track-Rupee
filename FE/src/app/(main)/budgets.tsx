@@ -30,7 +30,7 @@ export default function BudgetsScreen() {
   const { data: cats } = useGetCategoriesQuery('EXPENSE');
   const [create, creating] = useCreateBudgetMutation();
   const [update, updating] = useUpdateBudgetMutation();
-  const [remove] = useDeleteBudgetMutation();
+  const [remove, removing] = useDeleteBudgetMutation();
   const budgets = data?.data.budgets ?? [];
   const categories = cats?.data.categories ?? [];
   const message = (e: unknown) =>
@@ -52,6 +52,22 @@ export default function BudgetsScreen() {
     } catch (e) {
       setError(message(e));
     }
+  };
+  const deleteBudget = (budget: Budget) => {
+    Alert.alert('Delete budget', 'Are you sure you want to delete this budget?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await remove(budget.id).unwrap();
+          } catch (e) {
+            Alert.alert('Unable to delete budget', message(e));
+          }
+        },
+      },
+    ]);
   };
   return (
     <Screen contentContainerStyle={styles.screen}>
@@ -132,22 +148,16 @@ export default function BudgetsScreen() {
                         ? `₹${formatInr(Math.abs(Number(b.remaining)))} over budget`
                         : `₹${formatInr(b.remaining)} remaining`}
                     </Text>
-                    {b.isOverBudget && (
-                      <Pressable
-                        onPress={() =>
-                          Alert.alert('Delete budget', 'Delete this budget?', [
-                            { text: 'Cancel' },
-                            {
-                              text: 'Delete',
-                              style: 'destructive',
-                              onPress: () => void remove(b.id),
-                            },
-                          ])
-                        }
-                      >
-                        <Text style={styles.over}>Delete</Text>
-                      </Pressable>
-                    )}
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`Delete ${categories.find((c) => c.id === b.categoryId)?.name ?? 'budget'}`}
+                      disabled={removing.isLoading}
+                      onPress={() => deleteBudget(b)}
+                    >
+                      <Text style={[styles.over, removing.isLoading && styles.disabledText]}>
+                        {removing.isLoading ? 'Deleting...' : 'Delete'}
+                      </Text>
+                    </Pressable>
                   </View>
                 </Pressable>
               ))}
@@ -160,7 +170,7 @@ export default function BudgetsScreen() {
           <View style={styles.modal}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{selected ? 'Edit budget' : 'Add budget'}</Text>
-              <Pressable onPress={() => setVisible(false)}>
+              <Pressable disabled={creating.isLoading || updating.isLoading} onPress={() => setVisible(false)}>
                 <MaterialIcons name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
@@ -191,11 +201,12 @@ export default function BudgetsScreen() {
             />
             {error && <Text style={styles.error}>{error}</Text>}
             <View style={styles.actions}>
-              <Pressable style={styles.cancel} onPress={() => setVisible(false)}>
+              <Pressable disabled={creating.isLoading || updating.isLoading} style={styles.cancel} onPress={() => setVisible(false)}>
                 <Text style={styles.cancelText}>Cancel</Text>
               </Pressable>
               <View style={styles.save}>
                 <PrimaryButton
+                  loading={creating.isLoading || updating.isLoading}
                   disabled={creating.isLoading || updating.isLoading}
                   label="Save"
                   onPress={() => void save()}
@@ -219,6 +230,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: spacing.md,
+    marginTop: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
@@ -260,6 +272,7 @@ const styles = StyleSheet.create({
   meta: { ...typography.caption, color: colors.textMuted },
   percent: { color: colors.primary, fontFamily: fonts.bold },
   over: { color: '#B42318', fontFamily: fonts.bold },
+  disabledText: { opacity: 0.55 },
   track: {
     height: 8,
     borderRadius: radii.pill,
@@ -314,6 +327,3 @@ const styles = StyleSheet.create({
   cancelText: { color: colors.text },
   save: { flex: 1 },
 });
-
-
-

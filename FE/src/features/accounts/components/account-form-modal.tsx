@@ -2,8 +2,10 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect, useRef } from "react";
 import {
   Animated,
+  KeyboardAvoidingView,
   Modal,
   Pressable,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -64,6 +66,7 @@ export function AccountFormModal({
       onRequestClose={onCancel}
     >
       <Animated.View style={[styles.overlay, { opacity: progress }]}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <Animated.View
           style={[
             styles.sheet,
@@ -87,6 +90,7 @@ export function AccountFormModal({
               accessibilityRole="button"
               accessibilityLabel="Close add account"
               hitSlop={12}
+              disabled={submitting}
               onPress={onCancel}
               style={styles.closeButton}
             >
@@ -138,18 +142,20 @@ export function AccountFormModal({
             </Text>
           )}
           <View style={styles.actions}>
-            <Pressable onPress={onCancel} style={styles.cancel}>
+            <Pressable disabled={submitting} onPress={onCancel} style={styles.cancel}>
               <Text style={styles.cancelText}>Cancel</Text>
             </Pressable>
             <View style={styles.create}>
               <PrimaryButton
                 disabled={submitting}
+                loading={submitting}
                 label={editing ? "Save changes" : "Create account"}
                 onPress={onSubmit}
               />
             </View>
           </View>
         </Animated.View>
+        </KeyboardAvoidingView>
       </Animated.View>
     </Modal>
   );
